@@ -1,0 +1,297 @@
+Title: 访问WordPress4.1–zh_CN仪表盘慢的解决方案
+Link:  http://www.hainuer.com/program-life/wordpress4-1-dashboard/
+
+Plaintext:
+
+
+仪表盘访问速度较慢以及无法正常打开仪表盘，主要是因为加载的一些JavaScript脚本及字体文件位于Google的服务器上。而现在所有Google的服务在中国境内都不能正常访问了，这就导致了我们打开WP后台仪表盘缓慢以及无法正常访问。
+因此，我们只需要替换相对应的JavaScript脚本及字体样式文件即可。我们分三个步骤来进行：
+一. JavaScript脚本文件：
+打开文件script-loader.php（路径:/wp-includes/script-loader.php），定位到150-158行，可以看到这里加载了来自Google的8个脚本文件，因此我们将其替换掉即可。
+
+8个JavaScript文件我们已经下载了，您可以在文章末尾的链接地址下载后上传到网站服务器进行替换。
+ 二. 字体样式文件：
+仍然是script-loader.php文件，我们定位到607行 ，可以发现如下代码：
+1
+2
+// Hotlink Open Sans, for now
+$open_sans_font_url = "//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,300,400,600&subset=$subsets";
+我们自定义一个Google OpenSans字体样式文件，然后把此处的url地址替换为我们自定义的字体样式文件的路径就可以了。
+fonts.useso.com.css的内容为：
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Light'), local('OpenSans-Light'), url(../fonts/opensans/DXI1ORHCpsQm3Vp6mXoaTY3LH2FgLjViKkqswU-xtII.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(../fonts/opensans/u-WUoqrET9fUeobQW7jkRSZ2oysoEQEeKwjgmXLRnTc.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(../fonts/opensans/MTP_ySUJH_bn48VBG8sNSo3LH2FgLjViKkqswU-xtII.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 300;
+  src: local('Open Sans Light Italic'), local('OpenSansLight-Italic'), url(../fonts/opensans/PRmiXeptR36kaC0GEAetxo-ObED0kqzHZpR7AUXSC4U.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(../fonts/opensans/xjAJXh38I15wypJXxuGMBgzzZlagSe_blz3aczwf9QY.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(../fonts/opensans/PRmiXeptR36kaC0GEAetxub4m3zD5DWwcrpmXcA84Oc.ttf) format('truetype');
+}
+样式文件所需的TTF字体我们也下载了，您可以在文章末尾的链接地址下载后上传到网站服务器进行替换。注意根据自己上传的路径更改CSS文件。
+ 三. get_avatar函数：
+造成仪表盘访问慢的另一个原因是仪表盘需要获取头像，而头像主要来自于gravatar.com，国内用户虽然能访问，但速度较慢。因此我们也对此函数做出更改。
+打开pluggable.php（/wp-includes/pluggable.php）,定位到2095行的get_avatar的函数，然后将2083-2203行之间的内容替换为下面的内容：
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+if ( !function_exists( 'get_avatar' ) ) : 
+/** 
+* Retrieve the avatar for a user who provided a user ID or email address. 
+* 
+* @since 2.5 
+* @param int|string|object $id_or_email A user ID, email address, or comment object 
+* @param int $size Size of the avatar image 
+* @param string $default URL to a default image to use if no avatar is available 
+* @param string $alt Alternate text to use in image tag. Defaults to blank 
+* @return string tag for the user's avatar 
+*/ 
+function get_avatar( $id_or_email, $size = '96', $default = '', $alt = false ) { 
+	if ( ! get_option('show_avatars') ) 
+	return false; 
+	if ( false === $alt) 
+	$safe_alt = ''; 
+	else 
+	$safe_alt = esc_attr( $alt ); 
+	if ( !is_numeric($size) ) 
+	$size = '96'; 
+	$default = includes_url('images/blank.gif'); 
+	$avatar = ""; 
+	return apply_filters('get_avatar', $avatar, $id_or_email, $size, $default, $alt); 
+} 
+endif;
+完成以上的各个步骤，做好相应的保存工作，我们就可以快速的访问WP仪表盘了。
+附件：JavaScript文件及字体文件
+
+
+Body:
+<div class="entry-content clearfix">
+<p><a href="http://www.hainuer.com/wp-content/uploads/2015/03/wp_4.1_zh-CN.jpg"><img alt="wp_4.1_zh-CN" class=" size-full wp-image-87 aligncenter" height="412" src="http://www.hainuer.com/wp-content/uploads/2015/03/wp_4.1_zh-CN.jpg" width="620"/></a></p>
+<p>仪表盘访问速度较慢以及无法正常打开仪表盘，主要是因为加载的一些JavaScript脚本及字体文件位于Google的服务器上。而现在所有Google的服务在中国境内都不能正常访问了，这就导致了我们打开WP后台仪表盘缓慢以及无法正常访问。</p>
+<p>因此，我们只需要替换相对应的JavaScript脚本及字体样式文件即可。我们分三个步骤来进行：</p>
+<blockquote><p>一. JavaScript脚本文件：</p></blockquote>
+<p>打开文件script-loader.php（路径:/wp-includes/script-loader.php），定位到150-158行，可以看到这里加载了来自Google的8个脚本文件，因此我们将其替换掉即可。</p>
+<p><a href="http://www.hainuer.com/wp-content/uploads/2015/03/javascript.png"><img alt="javascript" class="alignnone size-full wp-image-79" height="195" src="http://www.hainuer.com/wp-content/uploads/2015/03/javascript.png" width="955"/></a></p>
+<p>8个JavaScript文件我们已经下载了，您可以在文章末尾的链接地址下载后上传到网站服务器进行替换。</p>
+<blockquote><p> 二. 字体样式文件：</p></blockquote>
+<p>仍然是script-loader.php文件，我们定位到607行 ，可以发现如下代码：</p>
+<div class="wp_syntax"><table><tr><td class="line_numbers"><pre>1
+2
+</pre></td><td class="code"><pre class="javascript" style="font-family:monospace;"><span style="color: #006600; font-style: italic;">// Hotlink Open Sans, for now</span>
+$open_sans_font_url <span style="color: #339933;">=</span> <span style="color: #3366CC;">"//fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,300,400,600&amp;subset=$subsets"</span><span style="color: #339933;">;</span></pre></td></tr></table></div>
+<p>我们自定义一个Google OpenSans字体样式文件，然后把此处的url地址替换为我们自定义的字体样式文件的路径就可以了。</p>
+<p>fonts.useso.com.css的内容为：</p>
+<div class="wp_syntax"><table><tr><td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre></td><td class="code"><pre class="css" style="font-family:monospace;"><span style="color: #a1a100;">@font-face {</span>
+  <span style="color: #000000; font-weight: bold;">font-family</span><span style="color: #00AA00;">:</span> <span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-style</span><span style="color: #00AA00;">:</span> <span style="color: #993333;">normal</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-weight</span><span style="color: #00AA00;">:</span> <span style="color: #cc66cc;">300</span><span style="color: #00AA00;">;</span>
+  src<span style="color: #00AA00;">:</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'Open Sans Light'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'OpenSans-Light'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> <span style="color: #993333;">url</span><span style="color: #00AA00;">(</span><span style="color: #ff0000; font-style: italic;">../fonts/opensans/DXI1ORHCpsQm3Vp6mXoaTY3LH2FgLjViKkqswU-xtII.ttf</span><span style="color: #00AA00;">)</span> format<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'truetype'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">;</span>
+<span style="color: #00AA00;">}</span>
+<span style="color: #a1a100;">@font-face {</span>
+  <span style="color: #000000; font-weight: bold;">font-family</span><span style="color: #00AA00;">:</span> <span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-style</span><span style="color: #00AA00;">:</span> <span style="color: #993333;">normal</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-weight</span><span style="color: #00AA00;">:</span> <span style="color: #cc66cc;">400</span><span style="color: #00AA00;">;</span>
+  src<span style="color: #00AA00;">:</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'OpenSans'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> <span style="color: #993333;">url</span><span style="color: #00AA00;">(</span><span style="color: #ff0000; font-style: italic;">../fonts/opensans/u-WUoqrET9fUeobQW7jkRSZ2oysoEQEeKwjgmXLRnTc.ttf</span><span style="color: #00AA00;">)</span> format<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'truetype'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">;</span>
+<span style="color: #00AA00;">}</span>
+<span style="color: #a1a100;">@font-face {</span>
+  <span style="color: #000000; font-weight: bold;">font-family</span><span style="color: #00AA00;">:</span> <span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-style</span><span style="color: #00AA00;">:</span> <span style="color: #993333;">normal</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-weight</span><span style="color: #00AA00;">:</span> <span style="color: #cc66cc;">600</span><span style="color: #00AA00;">;</span>
+  src<span style="color: #00AA00;">:</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'Open Sans Semibold'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'OpenSans-Semibold'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> <span style="color: #993333;">url</span><span style="color: #00AA00;">(</span><span style="color: #ff0000; font-style: italic;">../fonts/opensans/MTP_ySUJH_bn48VBG8sNSo3LH2FgLjViKkqswU-xtII.ttf</span><span style="color: #00AA00;">)</span> format<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'truetype'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">;</span>
+<span style="color: #00AA00;">}</span>
+<span style="color: #a1a100;">@font-face {</span>
+  <span style="color: #000000; font-weight: bold;">font-family</span><span style="color: #00AA00;">:</span> <span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-style</span><span style="color: #00AA00;">:</span> <span style="color: #993333;">italic</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-weight</span><span style="color: #00AA00;">:</span> <span style="color: #cc66cc;">300</span><span style="color: #00AA00;">;</span>
+  src<span style="color: #00AA00;">:</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'Open Sans Light Italic'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'OpenSansLight-Italic'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> <span style="color: #993333;">url</span><span style="color: #00AA00;">(</span><span style="color: #ff0000; font-style: italic;">../fonts/opensans/PRmiXeptR36kaC0GEAetxo-ObED0kqzHZpR7AUXSC4U.ttf</span><span style="color: #00AA00;">)</span> format<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'truetype'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">;</span>
+<span style="color: #00AA00;">}</span>
+<span style="color: #a1a100;">@font-face {</span>
+  <span style="color: #000000; font-weight: bold;">font-family</span><span style="color: #00AA00;">:</span> <span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-style</span><span style="color: #00AA00;">:</span> <span style="color: #993333;">italic</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-weight</span><span style="color: #00AA00;">:</span> <span style="color: #cc66cc;">400</span><span style="color: #00AA00;">;</span>
+  src<span style="color: #00AA00;">:</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'Open Sans Italic'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'OpenSans-Italic'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> <span style="color: #993333;">url</span><span style="color: #00AA00;">(</span><span style="color: #ff0000; font-style: italic;">../fonts/opensans/xjAJXh38I15wypJXxuGMBgzzZlagSe_blz3aczwf9QY.ttf</span><span style="color: #00AA00;">)</span> format<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'truetype'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">;</span>
+<span style="color: #00AA00;">}</span>
+<span style="color: #a1a100;">@font-face {</span>
+  <span style="color: #000000; font-weight: bold;">font-family</span><span style="color: #00AA00;">:</span> <span style="color: #ff0000;">'Open Sans'</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-style</span><span style="color: #00AA00;">:</span> <span style="color: #993333;">italic</span><span style="color: #00AA00;">;</span>
+  <span style="color: #000000; font-weight: bold;">font-weight</span><span style="color: #00AA00;">:</span> <span style="color: #cc66cc;">600</span><span style="color: #00AA00;">;</span>
+  src<span style="color: #00AA00;">:</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'Open Sans Semibold Italic'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> local<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'OpenSans-SemiboldItalic'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">,</span> <span style="color: #993333;">url</span><span style="color: #00AA00;">(</span><span style="color: #ff0000; font-style: italic;">../fonts/opensans/PRmiXeptR36kaC0GEAetxub4m3zD5DWwcrpmXcA84Oc.ttf</span><span style="color: #00AA00;">)</span> format<span style="color: #00AA00;">(</span><span style="color: #ff0000;">'truetype'</span><span style="color: #00AA00;">)</span><span style="color: #00AA00;">;</span>
+<span style="color: #00AA00;">}</span></pre></td></tr></table></div>
+<p>样式文件所需的TTF字体我们也下载了，您可以在文章末尾的链接地址下载后上传到网站服务器进行替换。注意根据自己上传的路径更改CSS文件。</p>
+<blockquote><p> 三. get_avatar函数：</p></blockquote>
+<p>造成仪表盘访问慢的另一个原因是仪表盘需要获取头像，而头像主要来自于gravatar.com，国内用户虽然能访问，但速度较慢。因此我们也对此函数做出更改。</p>
+<p>打开pluggable.php（/wp-includes/pluggable.php）,定位到2095行的get_avatar的函数，然后将2083-2203行之间的内容替换为下面的内容：</p>
+<div class="wp_syntax"><table><tr><td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="code"><pre class="javascript" style="font-family:monospace;"><span style="color: #000066; font-weight: bold;">if</span> <span style="color: #009900;">(</span> <span style="color: #339933;">!</span>function_exists<span style="color: #009900;">(</span> <span style="color: #3366CC;">'get_avatar'</span> <span style="color: #009900;">)</span> <span style="color: #009900;">)</span> <span style="color: #339933;">:</span> 
+<span style="color: #006600; font-style: italic;">/** 
+* Retrieve the avatar for a user who provided a user ID or email address. 
+* 
+* @since 2.5 
+* @param int|string|object $id_or_email A user ID, email address, or comment object 
+* @param int $size Size of the avatar image 
+* @param string $default URL to a default image to use if no avatar is available 
+* @param string $alt Alternate text to use in image tag. Defaults to blank 
+* @return string tag for the user's avatar 
+*/</span> 
+<span style="color: #000066; font-weight: bold;">function</span> get_avatar<span style="color: #009900;">(</span> $id_or_email<span style="color: #339933;">,</span> $size <span style="color: #339933;">=</span> <span style="color: #3366CC;">'96'</span><span style="color: #339933;">,</span> $default <span style="color: #339933;">=</span> <span style="color: #3366CC;">''</span><span style="color: #339933;">,</span> $alt <span style="color: #339933;">=</span> <span style="color: #003366; font-weight: bold;">false</span> <span style="color: #009900;">)</span> <span style="color: #009900;">{</span> 
+	<span style="color: #000066; font-weight: bold;">if</span> <span style="color: #009900;">(</span> <span style="color: #339933;">!</span> get_option<span style="color: #009900;">(</span><span style="color: #3366CC;">'show_avatars'</span><span style="color: #009900;">)</span> <span style="color: #009900;">)</span> 
+	<span style="color: #000066; font-weight: bold;">return</span> <span style="color: #003366; font-weight: bold;">false</span><span style="color: #339933;">;</span> 
+	<span style="color: #000066; font-weight: bold;">if</span> <span style="color: #009900;">(</span> <span style="color: #003366; font-weight: bold;">false</span> <span style="color: #339933;">===</span> $alt<span style="color: #009900;">)</span> 
+	$safe_alt <span style="color: #339933;">=</span> <span style="color: #3366CC;">''</span><span style="color: #339933;">;</span> 
+	<span style="color: #000066; font-weight: bold;">else</span> 
+	$safe_alt <span style="color: #339933;">=</span> esc_attr<span style="color: #009900;">(</span> $alt <span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	<span style="color: #000066; font-weight: bold;">if</span> <span style="color: #009900;">(</span> <span style="color: #339933;">!</span>is_numeric<span style="color: #009900;">(</span>$size<span style="color: #009900;">)</span> <span style="color: #009900;">)</span> 
+	$size <span style="color: #339933;">=</span> <span style="color: #3366CC;">'96'</span><span style="color: #339933;">;</span> 
+	$default <span style="color: #339933;">=</span> includes_url<span style="color: #009900;">(</span><span style="color: #3366CC;">'images/blank.gif'</span><span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+	$avatar <span style="color: #339933;">=</span> <span style="color: #3366CC;">""</span><span style="color: #339933;">;</span> 
+	<span style="color: #000066; font-weight: bold;">return</span> apply_filters<span style="color: #009900;">(</span><span style="color: #3366CC;">'get_avatar'</span><span style="color: #339933;">,</span> $avatar<span style="color: #339933;">,</span> $id_or_email<span style="color: #339933;">,</span> $size<span style="color: #339933;">,</span> $default<span style="color: #339933;">,</span> $alt<span style="color: #009900;">)</span><span style="color: #339933;">;</span> 
+<span style="color: #009900;">}</span> 
+endif<span style="color: #339933;">;</span></pre></td></tr></table></div>
+<p>完成以上的各个步骤，做好相应的保存工作，我们就可以快速的访问WP仪表盘了。</p>
+<p>附件：<a href="http://www.hainuer.com/wp-content/uploads/2015/03/wp_4.1_zh-CN.zip">JavaScript文件及字体文件</a></p>
+</div>
+

@@ -1,0 +1,49 @@
+Title: 在MacOS中使用SecureCRT传输文件
+Link:  http://www.hainuer.com/program-life/securecrt-transfer-mac/
+
+Plaintext:
+
+SecureCRT是一个仿真终端连接工具。它可以方便的连接SSH服务器，远程管理Linux。同时，它还能使用多种协议方便的上传下载文件。其中Zmodem是SecureCRT支持比较好的一种古老的上传下载协议。
+要使用Zmodem上传下载，必须要在Linux中安装相应的软件。否则SecureCRT无法正常上传或下载。在CentOS与Debian中，这个软件的名字叫“lrzsz”。下面将介绍其安装与使用方法。
+安装lrzsz
+
+# 安装lrzsz
+yum install lrzsz
+上传
+
+# 使用cd命令切换上传目录
+cd /tmp
+# 然后将文件拖拽到SecureCRT中
+# 选择最后一下即可将文件上传到当前目录
+
+下载
+
+# 设置本地下载目录
+
+# 使用命令sz即可下载
+sz filename
+
+
+Body:
+<div class="entry-content clearfix">
+<p>SecureCRT是一个仿真终端连接工具。它可以方便的连接SSH服务器，远程管理Linux。同时，它还能使用多种协议方便的上传下载文件。其中Zmodem是SecureCRT支持比较好的一种古老的上传下载协议。</p>
+<p>要使用Zmodem上传下载，必须要在Linux中安装相应的软件。否则SecureCRT无法正常上传或下载。在CentOS与Debian中，这个软件的名字叫“lrzsz”。下面将介绍其安装与使用方法。</p>
+<blockquote><p>安装lrzsz</p>
+</blockquote>
+<p># 安装lrzsz<br/>
+yum install lrzsz</p>
+<blockquote><p>上传</p>
+</blockquote>
+<p># 使用cd命令切换上传目录<br/>
+cd /tmp<br/>
+# 然后将文件拖拽到SecureCRT中<br/>
+# 选择最后一下即可将文件上传到当前目录<br/>
+<a href="http://hainuer.com/wp-content/uploads/2015/03/upload.png"><img alt="upload" class="alignnone size-full wp-image-108" height="470" src="http://phxpham.com/wp-content/uploads/2015/01/upload.png" width="660"/></a></p>
+<blockquote><p>下载</p>
+</blockquote>
+<p># 设置本地下载目录<br/>
+<a href="http://hainuer.com/wp-content/uploads/2015/03/download.png"><img alt="download" class="alignnone size-full wp-image-109" height="530" src="http://phxpham.com/wp-content/uploads/2015/01/download.png" width="850"/></a><br/>
+# 使用命令sz即可下载<br/>
+sz filename</p>
+</div>
+

@@ -1,0 +1,77 @@
+Title: Linux下自编译基本流程
+Link:  http://www.hainuer.com/program-life/linux-make-install/
+
+Plaintext:
+
+最近在学习Linux的CentOS
+已经学会搭建LAMP的WEB服务器环境了
+打算看看LNMP的环境怎么搭建
+结果发现好多地方都需要自己进行编译
+因此在这里总结下自编译的主要步骤
+
+主要步骤: 以编译OPENSSL为例
+
+约定:
+源码目录: /usr/local/src/openssl-1.0.1j
+编译存放: /usr/local/openssl
+# openssl
+# 打开源码目录
+cd /usr/local/src
+# 创建编译存放目录
+mkdir /usr/local/openssl
+# 解压源码
+tar zxvf openssl-1.0.1j.tar.gz
+# 变更到openssl源码目录
+cd openssl-1.0.1j
+# 启动编译配置文件
+./config –prefix=/usr/local/openssl
+# 编译
+make
+# 安装
+make install
+# 部分软件包到此就编译完成
+# 需要更新环境变量的软件包
+# 更新环境变量
+vi /etc/profile
+export PATH=$PATH:/usr/local/openssl/bin
+# :wq!
+source /etc/profile
+
+
+Body:
+<div class="entry-content clearfix">
+<p>最近在学习Linux的CentOS<br/>
+已经学会搭建LAMP的WEB服务器环境了<br/>
+打算看看LNMP的环境怎么搭建<br/>
+结果发现好多地方都需要自己进行编译<br/>
+因此在这里总结下自编译的主要步骤</p>
+<p><a href="http://hainuer.com/wp-content/uploads/2015/03/make.png"><img alt="make" class="alignnone size-full wp-image-116" height="438" src="http://phxpham.com/wp-content/uploads/2015/01/make.png" width="1030"/></a></p>
+<blockquote><p>主要步骤: 以编译OPENSSL为例</p>
+</blockquote>
+<p><strong>约定:</strong><br/>
+源码目录: /usr/local/src/openssl-1.0.1j<br/>
+编译存放: /usr/local/openssl</p>
+<p># openssl<br/>
+# 打开源码目录<br/>
+cd /usr/local/src<br/>
+# 创建编译存放目录<br/>
+mkdir /usr/local/openssl<br/>
+# 解压源码<br/>
+tar zxvf openssl-1.0.1j.tar.gz<br/>
+# 变更到openssl源码目录<br/>
+cd openssl-1.0.1j<br/>
+# 启动编译配置文件<br/>
+./config –prefix=/usr/local/openssl<br/>
+# 编译<br/>
+make<br/>
+# 安装<br/>
+make install</p>
+<p># 部分软件包到此就编译完成</p>
+<p># 需要更新环境变量的软件包<br/>
+# 更新环境变量<br/>
+vi /etc/profile<br/>
+export PATH=$PATH:/usr/local/openssl/bin<br/>
+# :wq!<br/>
+source /etc/profile</p>
+</div>
+

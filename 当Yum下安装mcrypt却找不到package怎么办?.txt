@@ -1,0 +1,151 @@
+Title: 当Yum下安装mcrypt却找不到package怎么办?
+Link:  http://www.hainuer.com/program-life/yum-without-mcrypt-package/
+
+Plaintext:
+
+当我们兴高采烈的搭建了LAMP环境, 准备传个PHP项目到上面来演示下, 却发现需要安装mcrypt扩展才能使用。
+你想, Yum一下, 不就好了。 可是当你输入yum install mcrypt之后才发现根本没有这个包。 郁闷啊…
+只有自己编译咯
+源码压缩包准备
+1. 与PHP版本对应的PHP完整包, 戳PHP下载。
+这里以5.3.3为例。
+2. libmcrypt-2.5.8.tar
+猛戳libmcrypt-2.5.8.tar下载。
+编译、安装命令集合
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+# 编译libmcrypt
+cd /usr/local/src
+tar -zxvf libmcrypt-2.5.8.tar.gz
+cd libmcrypt-2.5.8
+./configure
+make
+make install
+# libmcript默认安装在/usr/local
+ 
+# 编译mcrypt
+cd /usr/local/src/php-5.3.3
+cd ext/mcrypt
+# 执行phpize
+# 检测是否可以动态加载扩展
+# 如果没有此命令, 可以安装php-devel获得
+phpize
+# 配置编译
+# 使用whereis查看php-config的目录
+./configure –with-php-config=/usr/bin/php-config
+ 
+# 编译、安装
+make
+make install
+ 
+# 检测扩展是否安装成功
+php -m
+ 
+# 如果列表中没有
+# 那就只能通过php.ini配置扩展
+# 即在配置文件中加入extension=mcrypt.so
+系统: CentOS 6.5
+
+
+Body:
+<div class="entry-content clearfix">
+<p>当我们兴高采烈的搭建了LAMP环境, 准备传个PHP项目到上面来演示下, 却发现需要安装mcrypt扩展才能使用。<br/>
+你想, Yum一下, 不就好了。 可是当你输入yum install mcrypt之后才发现根本没有这个包。 郁闷啊…<br/>
+只有自己编译咯</p>
+<blockquote><p>源码压缩包准备</p></blockquote>
+<p>1. 与PHP版本对应的PHP完整包, 戳<a href="http://eduunix.ccut.edu.cn/index2/php/php/" target="_blank">PHP</a>下载。<br/>
+这里以5.3.3为例。<br/>
+2. libmcrypt-2.5.8.tar<br/>
+猛戳<a href="http://phxpham.com/wp-content/uploads/2015/01/libmcrypt-2.5.8.tar.gz">libmcrypt-2.5.8.tar</a>下载。</p>
+<blockquote><p>编译、安装命令集合</p></blockquote>
+<div class="wp_syntax"><table><tr><td class="line_numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="code"><pre class="bash" style="font-family:monospace;"><span style="color: #666666; font-style: italic;"># 编译libmcrypt</span>
+<span style="color: #7a0874; font-weight: bold;">cd</span> <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>local<span style="color: #000000; font-weight: bold;">/</span>src
+<span style="color: #c20cb9; font-weight: bold;">tar</span> <span style="color: #660033;">-zxvf</span> libmcrypt-2.5.8.tar.gz
+<span style="color: #7a0874; font-weight: bold;">cd</span> libmcrypt-2.5.8
+.<span style="color: #000000; font-weight: bold;">/</span>configure
+<span style="color: #c20cb9; font-weight: bold;">make</span>
+<span style="color: #c20cb9; font-weight: bold;">make</span> <span style="color: #c20cb9; font-weight: bold;">install</span>
+<span style="color: #666666; font-style: italic;"># libmcript默认安装在/usr/local</span>
+ 
+<span style="color: #666666; font-style: italic;"># 编译mcrypt</span>
+<span style="color: #7a0874; font-weight: bold;">cd</span> <span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>local<span style="color: #000000; font-weight: bold;">/</span>src<span style="color: #000000; font-weight: bold;">/</span>php-5.3.3
+<span style="color: #7a0874; font-weight: bold;">cd</span> ext<span style="color: #000000; font-weight: bold;">/</span>mcrypt
+<span style="color: #666666; font-style: italic;"># 执行phpize</span>
+<span style="color: #666666; font-style: italic;"># 检测是否可以动态加载扩展</span>
+<span style="color: #666666; font-style: italic;"># 如果没有此命令, 可以安装php-devel获得</span>
+phpize
+<span style="color: #666666; font-style: italic;"># 配置编译</span>
+<span style="color: #666666; font-style: italic;"># 使用whereis查看php-config的目录</span>
+.<span style="color: #000000; font-weight: bold;">/</span>configure –with-php-config=<span style="color: #000000; font-weight: bold;">/</span>usr<span style="color: #000000; font-weight: bold;">/</span>bin<span style="color: #000000; font-weight: bold;">/</span>php-config
+ 
+<span style="color: #666666; font-style: italic;"># 编译、安装</span>
+<span style="color: #c20cb9; font-weight: bold;">make</span>
+<span style="color: #c20cb9; font-weight: bold;">make</span> <span style="color: #c20cb9; font-weight: bold;">install</span>
+ 
+<span style="color: #666666; font-style: italic;"># 检测扩展是否安装成功</span>
+php <span style="color: #660033;">-m</span>
+ 
+<span style="color: #666666; font-style: italic;"># 如果列表中没有</span>
+<span style="color: #666666; font-style: italic;"># 那就只能通过php.ini配置扩展</span>
+<span style="color: #666666; font-style: italic;"># 即在配置文件中加入extension=mcrypt.so</span></pre></td></tr></table></div>
+<p>系统: CentOS 6.5</p>
+</div>
+
